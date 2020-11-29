@@ -112,27 +112,10 @@ def right():
     move3c(12,13,14,15)
 
     print(new_locations, "3c")
-    x = 0
-    while x <= len(locations):
-        print("new[x]", new_locations, "new_locations", locations[x], "full new list", new_locations, "full locations", locations)
-        if locations[x] != new_locations[x]:
-            break
-        else:
-            x += 1
-            if x == 15:
-                print("how did I get here?")
-                return('please no')
 
-    print("I did it")
-    z = 0
-    while z <= 15:
-        locations[z] = new_locations[z]
-        z += 1
-
+    copy_locations()
     new_number()
-
     game_loss()
-
     board_create(locations[0],locations[1],locations[2],locations[3],locations[4],locations[5],locations[6],locations[7],locations[8],locations[9],locations[10],locations[11],locations[12],locations[13],locations[14],locations[15])
 
 def left():
@@ -166,29 +149,11 @@ def left():
     move3c(15,14,13,12)
 
     print("3c", new_locations)
-
     print(locations, "3c")
-    x = 0
-    while x <= len(locations):
-        print(locations[x], "locations", new_locations[x], "new_locations", new_locations, "full new list", locations, "full locations")
-        if locations[x] != new_locations[x]:
-            break
-        else:
-            x += 1
-            if x == 15:
-                print("how did I get here?")
-                return('please no')
 
-    print("I did it")
-    z = 0
-    while z <= 15:
-        locations[z] = new_locations[z]
-        z += 1
-
+    copy_locations()
     new_number()
-
     board_create(locations[0],locations[1],locations[2],locations[3],locations[4],locations[5],locations[6],locations[7],locations[8],locations[9],locations[10],locations[11],locations[12],locations[13],locations[14],locations[15])
-
     game_loss()
 
 
@@ -220,27 +185,10 @@ def up():
 
 
     print(locations, "3c")
-    x = 0
-    while x <= len(locations):
-        print(locations[x], "locations", new_locations[x], "new_locations", new_locations, "full new list", locations, "full locations")
-        if locations[x] != new_locations[x]:
-            break
-        else:
-            x += 1
-            if x == 15:
-                print("how did I get here?")
-                return('please no')
 
-    print("I did it")
-    z = 0
-    while z <= 15:
-        locations[z] = new_locations[z]
-        z += 1
-
+    copy_locations()
     new_number()
-
     board_create(locations[0],locations[1],locations[2],locations[3],locations[4],locations[5],locations[6],locations[7],locations[8],locations[9],locations[10],locations[11],locations[12],locations[13],locations[14],locations[15])
-
     game_loss()
 
 def down():
@@ -269,6 +217,14 @@ def down():
     move3c(2,6,10,14)
     move3c(3,7,11,15)
 
+    copy_locations()
+    new_number()
+    board_create(locations[0],locations[1],locations[2],locations[3],locations[4],locations[5],locations[6],locations[7],locations[8],locations[9],locations[10],locations[11],locations[12],locations[13],locations[14],locations[15])
+    game_loss()
+
+def copy_locations():
+    global new_locations
+    global locations
     x = 0
     while x <= len(locations):
         print(locations[x], "locations", new_locations[x], "new_locations", new_locations, "full new list", locations, "full locations")
@@ -278,19 +234,13 @@ def down():
             x += 1
             if x == 15:
                 print("how did I get here?")
-                return('please no')
+                return
 
     print("I did it")
     z = 0
     while z <= 15:
         locations[z] = new_locations[z]
         z += 1
-
-    new_number()
-
-    board_create(locations[0],locations[1],locations[2],locations[3],locations[4],locations[5],locations[6],locations[7],locations[8],locations[9],locations[10],locations[11],locations[12],locations[13],locations[14],locations[15])
-
-    game_loss()
 
 def draw_number(a):
     global new_locations
