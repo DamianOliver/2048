@@ -25,7 +25,7 @@ score_y = 0.1
 button_size = (200, 50)
 score_size = (150, 50)
 button_bar_size = (
-    button_size[0] + score_size[0] + padding, 
+    button_size[0] + score_size[0] + padding,
     button_size[1] + score_size[1] + padding
     )
 button_bar_pos = (margin + board_size - button_bar_size[0], margin * 0.1)
@@ -69,7 +69,7 @@ colors = {
     16 : (246, 150, 100),
     32 : (247, 124, 95),
     64 : (247, 95, 59),
-    128 : (237, 208, 115),    
+    128 : (237, 208, 115),
     256 : (237, 204, 98),
     512 : (237, 201, 80),
     1024 : (237, 197, 63),
@@ -98,7 +98,7 @@ def right():
     move1c(14,15)
 
     print(new_locations, "1c")
-    
+
     move2c(1,2,3)
     move2c(5,6,7)
     move2c(9,10,11)
@@ -117,7 +117,7 @@ def right():
         print("new[x]", new_locations, "new_locations", locations[x], "full new list", new_locations, "full locations", locations)
         if locations[x] != new_locations[x]:
             break
-        else: 
+        else:
             x += 1
             if x == 15:
                 print("how did I get here?")
@@ -132,7 +132,7 @@ def right():
     new_number()
 
     game_loss()
-    
+
     board_create(locations[0],locations[1],locations[2],locations[3],locations[4],locations[5],locations[6],locations[7],locations[8],locations[9],locations[10],locations[11],locations[12],locations[13],locations[14],locations[15])
 
 def left():
@@ -173,7 +173,7 @@ def left():
         print(locations[x], "locations", new_locations[x], "new_locations", new_locations, "full new list", locations, "full locations")
         if locations[x] != new_locations[x]:
             break
-        else: 
+        else:
             x += 1
             if x == 15:
                 print("how did I get here?")
@@ -186,7 +186,7 @@ def left():
         z += 1
 
     new_number()
-    
+
     board_create(locations[0],locations[1],locations[2],locations[3],locations[4],locations[5],locations[6],locations[7],locations[8],locations[9],locations[10],locations[11],locations[12],locations[13],locations[14],locations[15])
 
     game_loss()
@@ -225,7 +225,7 @@ def up():
         print(locations[x], "locations", new_locations[x], "new_locations", new_locations, "full new list", locations, "full locations")
         if locations[x] != new_locations[x]:
             break
-        else: 
+        else:
             x += 1
             if x == 15:
                 print("how did I get here?")
@@ -268,13 +268,13 @@ def down():
     move3c(1,5,9,13)
     move3c(2,6,10,14)
     move3c(3,7,11,15)
-    
+
     x = 0
     while x <= len(locations):
         print(locations[x], "locations", new_locations[x], "new_locations", new_locations, "full new list", locations, "full locations")
         if locations[x] != new_locations[x]:
             break
-        else: 
+        else:
             x += 1
             if x == 15:
                 print("how did I get here?")
@@ -285,7 +285,7 @@ def down():
     while z <= 15:
         locations[z] = new_locations[z]
         z += 1
-    
+
     new_number()
 
     board_create(locations[0],locations[1],locations[2],locations[3],locations[4],locations[5],locations[6],locations[7],locations[8],locations[9],locations[10],locations[11],locations[12],locations[13],locations[14],locations[15])
@@ -298,7 +298,7 @@ def draw_number(a):
     number_value = locations[a]
     number_color = colors[locations[a]]
     cell_x = margin + padding + (cell_size + padding) * (a % 4)
-    cell_y = margin + padding + int(a / 4) * (cell_size + padding) 
+    cell_y = margin + padding + int(a / 4) * (cell_size + padding)
     cell_font_size = 100
     if number_value > 1000:
         cell_font_size = 70
@@ -311,7 +311,7 @@ def draw_number(a):
     if locations[a] == 0:
         text = ' '
     if locations[a] < 8:
-        text_color = (40,40,40) 
+        text_color = (40,40,40)
     text_x, text_y = text_pos(cell_font, text, cell_x, cell_y)
     cell_text = cell_font.render(text, True, (text_color))
     screen.blit(cell_text, (text_x, text_y))
@@ -336,13 +336,13 @@ def draw_button_bar():
     screen.blit(button_text, button_text_rect)
 
     global board_score_text
-    
+
     board_score_text = board_font.render("Score: " + str(score), True, (50,50,50))
     score_x = button_bar_pos[0] + button_size[0] + padding
     score_center_y = button_bar_pos[1] + button_size[1]/2
     board_score_text_rect = board_score_text.get_rect(x = score_x, centery = score_center_y)
     screen.blit(board_score_text, board_score_text_rect)
-    
+
     pg.display.update()
 
 def board_create(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p):
@@ -351,7 +351,7 @@ def board_create(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p):
     print("| {} | {} | {} | {} |".format(e, f, g, h))
     print("| {} | {} | {} | {} |".format(i, j, k, l))
     print("| {} | {} | {} | {} |".format(m, n, o, p))
-   
+
     pg.draw.rect(screen, background_board, (margin, margin, board_size, board_size))
 
     a = 0
@@ -369,7 +369,7 @@ def draw_border(border_size_x, border_size_y, border_x, border_y, padding, borde
      pg.draw.rect(screen, rect_color, (border_x + padding, border_y + padding, border_size_x - padding*2, border_size_y - padding*2))
 
 def new_number():
-    if new_numbers:        
+    if new_numbers:
         global locations
         possible_locations = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
         i = 0
@@ -382,11 +382,6 @@ def new_number():
                 print(new_location)
                 break
             i += 1
-
-# inerstcommentted out stuff here
-# inerstcommentted out stuff here
-# inerstcommentted out stuff here
-# inerstcommentted out stuff here
 
 def draw_cheat():
     global new_numbers
@@ -500,7 +495,7 @@ def draw_cheat():
                         return("cancel")
                 elif event.type == pg.QUIT:
                     pg.quit()
-            
+
 
 
     possible_values_button = pg.Surface(cheat_button_size)
@@ -718,7 +713,7 @@ while (True):
                 elif pg.mouse.get_pos()[0] > add_number_button_location[0] - cheat_button_size[0]/2 and pg.mouse.get_pos()[0] < add_number_button_location[0] + cheat_button_size[0] and pg.mouse.get_pos()[1] > add_number_button_location[1] and pg.mouse.get_pos()[1] < add_number_button_location[1] + cheat_button_size[1]:
                     add_number_clicked = True
                     draw_cheat()
-                    
+
         if event.type == pg.QUIT:
             pg.quit()
         if event.type == pg.KEYDOWN:
@@ -730,13 +725,7 @@ while (True):
                 right()
             elif event.key == pg.K_LEFT:
                 left()
-            elif event.key == pg.K_y: 
+            elif event.key == pg.K_y:
                 if pg.mouse.get_pos()[0] > cheat_pos[0] and pg.mouse.get_pos()[0] < cheat_pos[0] + cell_size and pg.mouse.get_pos()[1] < cheat_pos[1] - cell_size and pg.mouse.get_pos()[1] > button_pos[1]:
                     cheat_mode = True
                     draw_start_cheat()
-
-
-
-
-
-
