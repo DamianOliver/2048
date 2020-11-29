@@ -116,7 +116,7 @@ def right():
     copy_locations()
     new_number()
     game_loss()
-    board_create(locations[0],locations[1],locations[2],locations[3],locations[4],locations[5],locations[6],locations[7],locations[8],locations[9],locations[10],locations[11],locations[12],locations[13],locations[14],locations[15])
+    board_create(locations)
 
 def left():
     print("LEFT")
@@ -153,7 +153,7 @@ def left():
 
     copy_locations()
     new_number()
-    board_create(locations[0],locations[1],locations[2],locations[3],locations[4],locations[5],locations[6],locations[7],locations[8],locations[9],locations[10],locations[11],locations[12],locations[13],locations[14],locations[15])
+    board_create(locations)
     game_loss()
 
 
@@ -188,7 +188,7 @@ def up():
 
     copy_locations()
     new_number()
-    board_create(locations[0],locations[1],locations[2],locations[3],locations[4],locations[5],locations[6],locations[7],locations[8],locations[9],locations[10],locations[11],locations[12],locations[13],locations[14],locations[15])
+    board_create(locations)
     game_loss()
 
 def down():
@@ -219,7 +219,7 @@ def down():
 
     copy_locations()
     new_number()
-    board_create(locations[0],locations[1],locations[2],locations[3],locations[4],locations[5],locations[6],locations[7],locations[8],locations[9],locations[10],locations[11],locations[12],locations[13],locations[14],locations[15])
+    board_create(locations)
     game_loss()
 
 def copy_locations():
@@ -295,12 +295,12 @@ def draw_button_bar():
 
     pg.display.update()
 
-def board_create(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p):
+def board_create(locations):
     print("                                        ")
-    print("| {} | {} | {} | {} |".format(a, b, c, d))
-    print("| {} | {} | {} | {} |".format(e, f, g, h))
-    print("| {} | {} | {} | {} |".format(i, j, k, l))
-    print("| {} | {} | {} | {} |".format(m, n, o, p))
+    print("| {} | {} | {} | {} |".format(*locations[0:4]))
+    print("| {} | {} | {} | {} |".format(*locations[4:8]))
+    print("| {} | {} | {} | {} |".format(*locations[8:12]))
+    print("| {} | {} | {} | {} |".format(*locations[12:16]))
 
     pg.draw.rect(screen, background_board, (margin, margin, board_size, board_size))
 
@@ -432,7 +432,7 @@ def draw_cheat():
                             pg.display.update()
                     if pg.mouse.get_pos()[0] > submit_button_location[0] and pg.mouse.get_pos()[0] < submit_button_location[0] + submit_button_size[0] and pg.mouse.get_pos()[1] > submit_button_location[1] and pg.mouse.get_pos()[1] < submit_button_location[1] + submit_button_size[1]:
                         pg.draw.rect(screen, background_color, ( 0, screen_dimension/3, screen_dimension, screen_dimension/3))
-                        board_create(locations[0],locations[1],locations[2],locations[3],locations[4],locations[5],locations[6],locations[7],locations[8],locations[9],locations[10],locations[11],locations[12],locations[13],locations[14],locations[15])
+                        board_create(locations)
 
                         add_instructions_font = pg.font.Font(None, 40)
                         add_instructions_text = add_instructions_font.render("Click an Empty Location to Place Your Tile", True, (50,50,50))
@@ -441,7 +441,7 @@ def draw_cheat():
                         pg.display.update()
                     if pg.mouse.get_pos()[0] > cancel_button_location[0] and pg.mouse.get_pos()[0] < cancel_button_location[0] + cancel_button_size[0] and pg.mouse.get_pos()[1] > cancel_button_location[1] and pg.mouse.get_pos()[1] < cancel_button_location[1] + cancel_button_size[1]:
                         pg.draw.rect(screen, background_color, ( 0, screen_dimension/3, screen_dimension, screen_dimension/3))
-                        board_create(locations[0],locations[1],locations[2],locations[3],locations[4],locations[5],locations[6],locations[7],locations[8],locations[9],locations[10],locations[11],locations[12],locations[13],locations[14],locations[15])
+                        board_create(locations)
                         return("cancel")
                 elif event.type == pg.QUIT:
                     pg.quit()
@@ -570,7 +570,7 @@ def game_start():
     screen = pg.display.set_mode([board_size + margin*2, board_size + margin * 2], pg.DOUBLEBUF, 32)
     screen.fill(background_color)
     pg.display.set_caption("2048")
-    board_create(locations[0],locations[1],locations[2],locations[3],locations[4],locations[5],locations[6],locations[7],locations[8],locations[9],locations[10],locations[11],locations[12],locations[13],locations[14],locations[15])
+    board_create(locations)
 
 def game_over():
     print("game over")
