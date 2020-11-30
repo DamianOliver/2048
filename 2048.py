@@ -84,22 +84,9 @@ colors = {
 }
 
 tile_locations = {
-    0: (margin + padding, margin + padding),
-    1: (margin + padding + margin + cell_size, margin + padding),
-    2: (margin + padding + (margin + cell_size)*2, margin + padding),
-    3: (margin + padding + (margin + cell_size)*3, margin + padding),
-    4: (margin + padding, margin + padding + margin + cell_size),
-    5: (margin + padding + margin + cell_size, margin + padding + margin + cell_size),
-    6: (margin + padding + (margin + cell_size)*2, margin + padding + margin + cell_size),
-    7: (margin + padding + (margin + cell_size)*3, margin + padding + margin + cell_size),
-    8: (margin + padding, ),
-    9: (margin + padding + margin + cell_size, margin + padding + (margin + cell_size)*2),
-    10: (margin + padding + (margin + cell_size)*2, margin + padding + (margin + cell_size)*2),
-    11: (margin + padding + (margin + cell_size)*3, margin + padding + (margin + cell_size)*2),
-    12: (margin + padding, margin + padding + (margin + cell_size)*3),
-    13: (margin + padding + margin + cell_size, margin + padding + (margin + cell_size)*3),
-    14: (margin + padding + (margin + cell_size)*2, margin + padding + (margin + cell_size)*3),
-    15: (margin + padding + (margin + cell_size)*3, margin + padding + (margin + cell_size)*3),
+    i : (margin + padding + (i%4) * (padding + cell_size),
+         margin + padding + int(i/4) * (padding + cell_size))
+    for i in range(0, 16)
 }
 
 end_screen_color = (100,100,100,80)
