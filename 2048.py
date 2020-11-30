@@ -49,6 +49,8 @@ cancel_button_size = (200,50)
 cancel_button_color = (150, 30, 30)
 cancel_button_location = (add_options_location[0] - screen_dimension/3, add_options_location[1] + options_rect_size[1]/4)
 
+highlight_color = (230, 230, 0)
+
 add_instructions_location = (screen_dimension/2, 170)
 
 cheat_font = pg.font.Font(None, 30)
@@ -79,6 +81,25 @@ colors = {
     16384 : (0,0,0),
     32768 : (0,0,0),
     65536 : (0,0,0),
+}
+
+tile_locations = {
+    0: (margin + padding, margin + padding),
+    1: (margin + padding + margin + cell_size, margin + padding),
+    2: (margin + padding + (margin + cell_size)*2, margin + padding),
+    3: (margin + padding + (margin + cell_size)*3, margin + padding),
+    4: (margin + padding, margin + padding + margin + cell_size),
+    5: (margin + padding + margin + cell_size, margin + padding + margin + cell_size),
+    6: (margin + padding + (margin + cell_size)*2, margin + padding + margin + cell_size),
+    7: (margin + padding + (margin + cell_size)*3, margin + padding + margin + cell_size),
+    8: (margin + padding, ),
+    9: (margin + padding + margin + cell_size, margin + padding + (margin + cell_size)*2),
+    10: (margin + padding + (margin + cell_size)*2, margin + padding + (margin + cell_size)*2),
+    11: (margin + padding + (margin + cell_size)*3, margin + padding + (margin + cell_size)*2),
+    12: (margin + padding, margin + padding + (margin + cell_size)*3),
+    13: (margin + padding + margin + cell_size, margin + padding + (margin + cell_size)*3),
+    14: (margin + padding + (margin + cell_size)*2, margin + padding + (margin + cell_size)*3),
+    15: (margin + padding + (margin + cell_size)*3, margin + padding + (margin + cell_size)*3),
 }
 
 end_screen_color = (100,100,100,80)
@@ -333,13 +354,17 @@ def new_number():
                 break
             i += 1
 
+# this is here that I can find find this spot more easily
+# this is here that I can find find this spot more easily
+# this is here that I can find find this spot more easily
+# this is here that I can find find this spot more easily
+
 def draw_cheat():
     global new_numbers
     global new_numbers_clicked
     global add_number_clicked
     if new_numbers_clicked:
         new_numbers_clicked = False
-        print("new numbers clicked?")
         if not new_numbers:
             no_number_3 = "Off"
             no_number_button = pg.Surface(cheat_button_size)
@@ -433,6 +458,18 @@ def draw_cheat():
                     if pg.mouse.get_pos()[0] > submit_button_location[0] and pg.mouse.get_pos()[0] < submit_button_location[0] + submit_button_size[0] and pg.mouse.get_pos()[1] > submit_button_location[1] and pg.mouse.get_pos()[1] < submit_button_location[1] + submit_button_size[1]:
                         pg.draw.rect(screen, background_color, ( 0, screen_dimension/3, screen_dimension, screen_dimension/3))
                         board_create(locations)
+                        while True:
+                            for event in pg.event.get():
+                                if event.type == pg.MOUSEBUTTONDOWN:
+                                    current_square = which_square()
+                                    print(current_square)
+                                    if current_square < 20:
+                                        if locations[current_square] == 0:
+                                            locations[current_square] = add_options_value
+                                            board_create(locations)
+                                            return
+                                if event.type == pg.QUIT:
+                                    pygame.quit()
 
                         add_instructions_font = pg.font.Font(None, 40)
                         add_instructions_text = add_instructions_font.render("Click an Empty Location to Place Your Tile", True, (50,50,50))
@@ -551,6 +588,46 @@ def move3c(a,b,c,d):
             else:
                 new_locations[b] = new_locations[a]
                 new_locations[a] = 0
+
+def which_square():
+    if pg.mouse.get_pos()[0] > margin + padding and pg.mouse.get_pos()[0] < margin + padding + cell_size:
+        if pg.mouse.get_pos()[1] > margin + padding and pg.mouse.get_pos()[1] < margin + padding + cell_size:
+            return 0
+        elif pg.mouse.get_pos()[1] > margin + padding + cell_size + padding and pg.mouse.get_pos()[1] < margin + padding + padding + cell_size + cell_size:
+            return 4
+        elif pg.mouse.get_pos()[1] > margin + padding + (cell_size + padding)*2 and pg.mouse.get_pos()[1] < margin + padding + cell_size + (cell_size + padding)*2:
+            return 8
+        elif pg.mouse.get_pos()[1] > margin + padding + (cell_size + padding)*3 and pg.mouse.get_pos()[1] < margin + padding + cell_size + (cell_size + padding)*3:
+            return 12
+    elif pg.mouse.get_pos()[0] > margin + padding + cell_size + padding and pg.mouse.get_pos()[0] < margin + padding + padding + cell_size + cell_size:
+        if pg.mouse.get_pos()[1] > margin + padding and pg.mouse.get_pos()[1] < margin + padding + cell_size:
+            return 1
+        elif pg.mouse.get_pos()[1] > margin + padding + cell_size + padding and pg.mouse.get_pos()[1] < margin + padding + padding + cell_size + cell_size:
+            return 5
+        elif pg.mouse.get_pos()[1] > margin + padding + (cell_size + padding)*2 and pg.mouse.get_pos()[1] < margin + padding + cell_size + (cell_size + padding)*2:
+            return 9
+        elif pg.mouse.get_pos()[1] > margin + padding + (cell_size + padding)*3 and pg.mouse.get_pos()[1] < margin + padding + cell_size + (cell_size + padding)*3:
+            return 13
+    elif pg.mouse.get_pos()[0] > margin + padding + (cell_size + padding)*2 and pg.mouse.get_pos()[0] < margin + padding + cell_size + (cell_size + padding)*2:
+        if pg.mouse.get_pos()[1] > margin + padding and pg.mouse.get_pos()[1] < margin + padding + cell_size:
+            return 2
+        elif pg.mouse.get_pos()[1] > margin + padding + cell_size + padding and pg.mouse.get_pos()[1] < margin + padding + padding + cell_size + cell_size:
+            return 6
+        elif pg.mouse.get_pos()[1] > margin + padding + (cell_size + padding)*2 and pg.mouse.get_pos()[1] < margin + padding + cell_size + (cell_size + padding)*2:
+            return 10
+        elif pg.mouse.get_pos()[1] > margin + padding + (cell_size + padding)*3 and pg.mouse.get_pos()[1] < margin + padding + cell_size + (cell_size + padding)*3:
+            return 15
+    elif pg.mouse.get_pos()[0] > margin + padding + (cell_size + padding)*3 and pg.mouse.get_pos()[0] < margin + padding + cell_size + (cell_size + padding)*3:
+        if pg.mouse.get_pos()[1] > margin + padding and pg.mouse.get_pos()[1] < margin + padding + cell_size:
+            return 3
+        elif pg.mouse.get_pos()[1] > margin + padding + cell_size + padding and pg.mouse.get_pos()[1] < margin + padding + padding + cell_size + cell_size:
+            return 7
+        elif pg.mouse.get_pos()[1] > margin + padding + (cell_size + padding)*2 and pg.mouse.get_pos()[1] < margin + padding + cell_size + (cell_size + padding)*2:
+            return 11
+        elif pg.mouse.get_pos()[1] > margin + padding + (cell_size + padding)*3 and pg.mouse.get_pos()[1] < margin + padding + cell_size + (cell_size + padding)*3:
+            return 15
+    else:
+        return 20
 
 
 def game_start():
