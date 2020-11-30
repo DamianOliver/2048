@@ -84,22 +84,9 @@ colors = {
 }
 
 tile_locations = {
-    0: (margin + padding, margin + padding),
-    1: (margin + padding + margin + cell_size, margin + padding),
-    2: (margin + padding + (margin + cell_size)*2, margin + padding),
-    3: (margin + padding + (margin + cell_size)*3, margin + padding),
-    4: (margin + padding, margin + padding + margin + cell_size),
-    5: (margin + padding + margin + cell_size, margin + padding + margin + cell_size),
-    6: (margin + padding + (margin + cell_size)*2, margin + padding + margin + cell_size),
-    7: (margin + padding + (margin + cell_size)*3, margin + padding + margin + cell_size),
-    8: (margin + padding, ),
-    9: (margin + padding + margin + cell_size, margin + padding + (margin + cell_size)*2),
-    10: (margin + padding + (margin + cell_size)*2, margin + padding + (margin + cell_size)*2),
-    11: (margin + padding + (margin + cell_size)*3, margin + padding + (margin + cell_size)*2),
-    12: (margin + padding, margin + padding + (margin + cell_size)*3),
-    13: (margin + padding + margin + cell_size, margin + padding + (margin + cell_size)*3),
-    14: (margin + padding + (margin + cell_size)*2, margin + padding + (margin + cell_size)*3),
-    15: (margin + padding + (margin + cell_size)*3, margin + padding + (margin + cell_size)*3),
+    i : (margin + padding + (i%4) * (padding + cell_size),
+         margin + padding + int(i/4) * (padding + cell_size))
+    for i in range(0, 16)
 }
 
 end_screen_color = (100,100,100,80)
@@ -113,10 +100,7 @@ def right():
         new_locations[y] = locations[y]
         y += 1
     print(new_locations)
-    move1c(2,3)
-    move1c(6,7)
-    move1c(10,11)
-    move1c(14,15)
+    move1c(start=2, increment=1, step=4)
 
     print(new_locations, "1c")
 
@@ -149,11 +133,7 @@ def left():
         new_locations[y] = locations[y]
         y += 1
     print(new_locations)
-    print(new_locations)
-    move1c(1,0)
-    move1c(5,4)
-    move1c(9,8)
-    move1c(13,12)
+    move1c(start=1, increment=-1, step=4)
 
     print("1c", new_locations)
 
@@ -177,7 +157,6 @@ def left():
     board_create(locations)
     game_loss()
 
-
 def up():
     print("UP")
     global new_locations
@@ -189,10 +168,7 @@ def up():
         new_locations[y] = locations[y]
         y += 1
     print(new_locations)
-    move1c(4,0)
-    move1c(5,1)
-    move1c(6,2)
-    move1c(7,3)
+    move1c(start=4, increment=-4, step=1)
 
     move2c(8,4,0)
     move2c(9,5,1)
@@ -203,7 +179,6 @@ def up():
     move3c(13,9,5,1)
     move3c(14,10,6,2)
     move3c(15,11,7,3)
-
 
     print(locations, "3c")
 
@@ -223,10 +198,7 @@ def down():
         new_locations[y] = locations[y]
         y += 1
     print(new_locations)
-    move1c(8,12)
-    move1c(9,13)
-    move1c(10,14)
-    move1c(11,15)
+    move1c(start=8, increment=4, step=1)
 
     move2c(4,8,12)
     move2c(5,9,13)
@@ -528,7 +500,11 @@ def draw_start_cheat():
 
     pg.display.update()
 
-def move1c(a,b):
+def move1c(start, increment, step):
+    for i in range(0, 4):
+        move1c_step(start + i * step, start + i * step + increment)
+
+def move1c_step(a, b):
     global score
     global new_locations
     if new_locations[a] != 0:
