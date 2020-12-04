@@ -14,7 +14,10 @@ background_board = (187, 173, 160)
 unhover = (200,200,200)
 hover = (100,100,100)
 button_color = unhover
-hovered = False
+new_game_hovered = False
+tile_hovered = 0
+
+game_end = False
 
 board_size = 650
 margin = 200
@@ -39,15 +42,22 @@ cheat_button_color = (150,150,150)
 cheat_button_border_color = (70,70,70)
 options_rect_size = (screen_dimension/5, screen_dimension/5)
 no_number_button_location = ((screen_dimension/5) - cheat_button_size[0]/2, cheat_button_location_y)
-add_number_button_location = ((screen_dimension/5)*2.5, cheat_button_location_y)
-cheat_padding = 15
-add_options_location = (screen_dimension/2 - cheat_button_size[0]/2, screen_dimension/2 - cheat_button_size[1]/2)
+add_number_button_location = ((screen_dimension/5)*2.5 - cheat_button_size[0]/2, cheat_button_location_y)
+possible_values_button_location = ((screen_dimension/5)*4 - cheat_button_size[0]/2, cheat_button_location_y)
+cheat_padding = 10
+add_options_location = (screen_dimension/2 - options_rect_size[0]/2, screen_dimension/2 - cheat_button_size[1]/2)
 submit_button_size = (200,50)
 submit_button_color = (30, 150, 30)
 submit_button_location = (add_options_location[0] + screen_dimension/3, add_options_location[1] + options_rect_size[1]/4)
 cancel_button_size = (200,50)
 cancel_button_color = (150, 30, 30)
 cancel_button_location = (add_options_location[0] - screen_dimension/3, add_options_location[1] + options_rect_size[1]/4)
+add_value_button_size = (400,50)
+add_value_button_color = (170,170,170)
+add_value_button_hovered_color = (100,100,100)
+add_value_button_location = (screen_dimension/2 - add_value_button_size[0]/2, add_options_location[1] + options_rect_size[1] + 50)
+
+new_possible_values = []
 
 highlight_color = (230, 230, 0)
 
@@ -56,6 +66,8 @@ add_instructions_location = (screen_dimension/2, 170)
 cheat_font = pg.font.Font(None, 30)
 new_numbers_clicked = False
 add_number_clicked = False
+possible_values_clicked = False
+cheat_mode = False
 
 
 
@@ -104,24 +116,17 @@ def right():
 
     print(new_locations, "1c")
 
-    move2c(1,2,3)
-    move2c(5,6,7)
-    move2c(9,10,11)
-    move2c(13,14,15)
+    move2c(1,1,4)
 
     print(new_locations, "2c")
 
-    move3c(0,1,2,3)
-    move3c(4,5,6,7)
-    move3c(8,9,10,11)
-    move3c(12,13,14,15)
+    move3c(0,1,4)
 
     print(new_locations, "3c")
 
     copy_locations()
-    new_number()
-    game_loss()
     board_create(locations)
+    game_loss()
 
 def left():
     print("LEFT")
@@ -137,23 +142,16 @@ def left():
 
     print("1c", new_locations)
 
-    move2c(2,1,0)
-    move2c(6,5,4)
-    move2c(10,9,8)
-    move2c(14,13,12)
+    move2c(2,-1,4)
 
     print("2c", new_locations)
 
-    move3c(3,2,1,0)
-    move3c(7,6,5,4)
-    move3c(11,10,9,8)
-    move3c(15,14,13,12)
+    move3c(3,-1,4)
 
     print("3c", new_locations)
     print(locations, "3c")
 
     copy_locations()
-    new_number()
     board_create(locations)
     game_loss()
 
@@ -170,20 +168,13 @@ def up():
     print(new_locations)
     move1c(start=4, increment=-4, step=1)
 
-    move2c(8,4,0)
-    move2c(9,5,1)
-    move2c(10,6,2)
-    move2c(11,7,3)
+    move2c(8,-4,1)
 
-    move3c(12,8,4,0)
-    move3c(13,9,5,1)
-    move3c(14,10,6,2)
-    move3c(15,11,7,3)
+    move3c(12,-4,1)
 
     print(locations, "3c")
 
     copy_locations()
-    new_number()
     board_create(locations)
     game_loss()
 
@@ -200,18 +191,11 @@ def down():
     print(new_locations)
     move1c(start=8, increment=4, step=1)
 
-    move2c(4,8,12)
-    move2c(5,9,13)
-    move2c(6,10,14)
-    move2c(7,11,15)
+    move2c(4,4,1)
 
-    move3c(0,4,8,12)
-    move3c(1,5,9,13)
-    move3c(2,6,10,14)
-    move3c(3,7,11,15)
+    move3c(0,4,1)
 
     copy_locations()
-    new_number()
     board_create(locations)
     game_loss()
 
@@ -234,6 +218,8 @@ def copy_locations():
     while z <= 15:
         locations[z] = new_locations[z]
         z += 1
+
+    new_number()
 
 def draw_number(a):
     global new_locations
@@ -258,7 +244,6 @@ def draw_number(a):
     text_x, text_y = text_pos(cell_font, text, cell_x, cell_y)
     cell_text = cell_font.render(text, True, (text_color))
     screen.blit(cell_text, (text_x, text_y))
-    pg.display.flip()
 
 def text_pos(cell_font, text, cell_x, cell_y):
     text_size = cell_font.size(text)
@@ -268,7 +253,7 @@ def text_pos(cell_font, text, cell_x, cell_y):
 
 def draw_button_bar():
     board_font = pg.font.Font(None, 40)
-    pg.draw.rect((screen), background_color, (button_bar_pos[0], button_bar_pos[1], 400, 150))
+    pg.draw.rect((screen), background_color, (button_bar_pos[0], button_bar_pos[1], 600, 150))
     global button_pos
     button_pos = button_bar_pos
     button_text = board_font.render("New Game", True, (50,50,50))
@@ -335,6 +320,10 @@ def draw_cheat():
     global new_numbers
     global new_numbers_clicked
     global add_number_clicked
+    global possible_values_clicked
+    global new_possible_values
+    global possible_values
+    global add_value_button_color
     if new_numbers_clicked:
         new_numbers_clicked = False
         if not new_numbers:
@@ -354,8 +343,8 @@ def draw_cheat():
             no_number_button_text_3 = cheat_font.render(no_number_3, True, (50,50,50))
             no_number_button_text_rect_3 = no_number_button_text_3.get_rect(center = (cheat_button_location_x + cheat_button_size[0]/2, cheat_button_location_y + cheat_button_size[1]/2 + 25))
             screen.blit(no_number_button_text_3, no_number_button_text_rect_3)
-
             new_numbers = True
+            pg.display.update()
 
         elif new_numbers:
             no_number_3 = "On"
@@ -372,10 +361,10 @@ def draw_cheat():
             no_number_button_text_rect_3 = no_number_button_text_3.get_rect(center = (cheat_button_location_x + cheat_button_size[0]/2, cheat_button_location_y + cheat_button_size[1]/2 + 25))
             screen.blit(no_number_button_text_3, no_number_button_text_rect_3)
             new_numbers = False
+            pg.display.update()
 
-    if add_number_clicked:
+    elif add_number_clicked:
         add_number_clicked = False
-        print("It vas clicked")
         options_font_size = 150
         pg.draw.rect(screen, (150,150,150), (0, screen_dimension/3, screen_dimension, screen_dimension/3))
         add_number_message_font = pg.font.Font(None, 80)
@@ -411,25 +400,40 @@ def draw_cheat():
         screen.blit(cancel_text, cancel_text_rect)
         pg.display.update()
         while True:
+            global tile_hovered
             for event in pg.event.get():
                 if event.type == pg.MOUSEBUTTONDOWN:
-                    if pg.mouse.get_pos()[0] > add_options_location[0] and pg.mouse.get_pos()[0] < add_options_location[0] + cheat_button_size[0] and pg.mouse.get_pos()[1] > add_options_location[1] and pg.mouse.get_pos()[1] < add_options_location[1] + cheat_button_size[1]:
-                        if add_options_value < 2048:
+                    if pg.mouse.get_pos()[0] > add_options_location[0] and pg.mouse.get_pos()[0] < add_options_location[0] + options_rect_size[0] and pg.mouse.get_pos()[1] > add_options_location[1] and pg.mouse.get_pos()[1] < add_options_location[1] + options_rect_size[1]:
+                        if add_options_value == 2048:
+                            add_options_value = 2
+                        else:
                             add_options_value = add_options_value * 2
-                            if add_options_value >= 1000:
-                                options_font_size = 110
-                            print(options_font_size)
-                            options_value_font = pg.font.Font(None, options_font_size)
-                            options_value_text = options_value_font.render(str(add_options_value), True, (50,50,50))
-                            options_value_text_rect = options_value_text.get_rect(center = (add_options_location[0] + options_rect_size[0]/2, add_options_location[1] + options_rect_size[1]/2))
-                            print(add_options_value)
-                            add_options_rect.fill(colors[add_options_value])
-                            screen.blit(add_options_rect, add_options_location)
-                            screen.blit(options_value_text, options_value_text_rect)
-                            pg.display.update()
-                    if pg.mouse.get_pos()[0] > submit_button_location[0] and pg.mouse.get_pos()[0] < submit_button_location[0] + submit_button_size[0] and pg.mouse.get_pos()[1] > submit_button_location[1] and pg.mouse.get_pos()[1] < submit_button_location[1] + submit_button_size[1]:
+                        if add_options_value >= 1000:
+                            options_font_size = 110
+                        else:
+                            options_font_size = 150
+                        print(options_font_size)
+                        options_color = (50,50,50)
+                        if add_options_value >= 8:
+                            options_color = (255,255,255)
+                        options_value_font = pg.font.Font(None, options_font_size)
+                        options_value_text = options_value_font.render(str(add_options_value), True, (options_color))
+                        options_value_text_rect = options_value_text.get_rect(center = (add_options_location[0] + options_rect_size[0]/2, add_options_location[1] + options_rect_size[1]/2))
+                        add_options_rect.fill(colors[add_options_value])
+                        screen.blit(add_options_rect, add_options_location)
+                        screen.blit(options_value_text, options_value_text_rect)
+                        pg.display.update()
+                    elif pg.mouse.get_pos()[0] > submit_button_location[0] and pg.mouse.get_pos()[0] < submit_button_location[0] + submit_button_size[0] and pg.mouse.get_pos()[1] > submit_button_location[1] and pg.mouse.get_pos()[1] < submit_button_location[1] + submit_button_size[1]:
                         pg.draw.rect(screen, background_color, ( 0, screen_dimension/3, screen_dimension, screen_dimension/3))
                         board_create(locations)
+
+                        add_instructions_text_variable = "Click an Empty Location to Place Your Tile"
+                        add_instructions_font = pg.font.Font(None, 40)
+                        add_instructions_text = add_instructions_font.render(add_instructions_text_variable, True, (50,50,50))
+                        add_instructions_text_rect = add_instructions_text.get_rect(center = (add_instructions_location[0], add_instructions_location[1]))
+                        screen.blit(add_instructions_text, add_instructions_text_rect)
+                        pg.display.update()
+
                         while True:
                             for event in pg.event.get():
                                 if event.type == pg.MOUSEBUTTONDOWN:
@@ -438,18 +442,31 @@ def draw_cheat():
                                     if current_square < 20:
                                         if locations[current_square] == 0:
                                             locations[current_square] = add_options_value
-                                            board_create(locations)
+                                            draw_border(cell_size + padding, cell_size + padding, tile_locations[tile_hovered][0] - padding/2, tile_locations[tile_hovered][1] - padding/2, padding/2, (background_board), colors[0])
+                                            draw_number(tile_hovered)
+                                            draw_number(current_square)
+                                            pg.draw.rect(screen, background_color, (0, margin - 70, screen_dimension, 70))
+                                            pg.display.update()
                                             return
-                                if event.type == pg.QUIT:
-                                    pygame.quit()
+                                current_square = 20
+                                if event.type == pg.MOUSEMOTION:
+                                    current_square = which_square()
+                                    print(current_square)
+                                    if current_square != tile_hovered:
+                                        draw_border(cell_size + padding, cell_size + padding, tile_locations[tile_hovered][0] - padding/2, tile_locations[tile_hovered][1] - padding/2, padding/2, (background_board), colors[0])
+                                        draw_number(tile_hovered)
+                                        pg.display.update()
+                                        if current_square != 20:
+                                            if current_square < 20:
+                                                draw_border(cell_size + padding, cell_size + padding, tile_locations[current_square][0] - padding/2, tile_locations[current_square][1] - padding/2, padding/2, (255,255,0), colors[0])
+                                                draw_number(current_square)
+                                                pg.display.update()
+                                                tile_hovered = current_square
+                                elif event.type == pg.QUIT:
+                                    pg.quit()
 
-                        add_instructions_font = pg.font.Font(None, 40)
-                        add_instructions_text = add_instructions_font.render("Click an Empty Location to Place Your Tile", True, (50,50,50))
-                        add_instructions_text_rect = add_instructions_text.get_rect(center = (add_instructions_location[0], add_instructions_location[1]))
-                        screen.blit(add_instructions_text, add_instructions_text_rect)
-                        pg.display.update()
-                    if pg.mouse.get_pos()[0] > cancel_button_location[0] and pg.mouse.get_pos()[0] < cancel_button_location[0] + cancel_button_size[0] and pg.mouse.get_pos()[1] > cancel_button_location[1] and pg.mouse.get_pos()[1] < cancel_button_location[1] + cancel_button_size[1]:
-                        pg.draw.rect(screen, background_color, ( 0, screen_dimension/3, screen_dimension, screen_dimension/3))
+                    elif pg.mouse.get_pos()[0] > cancel_button_location[0] and pg.mouse.get_pos()[0] < cancel_button_location[0] + cancel_button_size[0] and pg.mouse.get_pos()[1] > cancel_button_location[1] and pg.mouse.get_pos()[1] < cancel_button_location[1] + cancel_button_size[1]:
+                        pg.draw.rect(screen, background_color, (0, screen_dimension/3, screen_dimension, screen_dimension/3))
                         board_create(locations)
                         return("cancel")
                 elif event.type == pg.QUIT:
@@ -457,12 +474,137 @@ def draw_cheat():
 
 
 
-    possible_values_button = pg.Surface(cheat_button_size)
-    possible_values_button.fill(cheat_button_color)
-    screen.blit(possible_values_button, ((screen_dimension/5)*4 - cheat_button_size[0]/2, cheat_button_location_y))
+    elif possible_values_clicked:
+        print("It vas clicked")
+        add_number_clicked = False
+        options_font_size = 150
+        pg.draw.rect(screen, (150,150,150), (0, screen_dimension/2 - screen_dimension/4, screen_dimension, screen_dimension/2))
+        add_number_message_font = pg.font.Font(None, 80)
+        add_number_text = "Click to Increase Value"
+        add_number_message = add_number_message_font.render(add_number_text, True, (50,50,50))
+        add_number_message_rect = add_number_message.get_rect(center = (screen_dimension/2, screen_dimension/3 + 40))
+        screen.blit(add_number_message, add_number_message_rect)
 
-    pg.display.update()
+        add_options_value = 2
+        add_options_rect = pg.Surface((options_rect_size))
+        options_value_font = pg.font.Font(None, options_font_size)
+        options_value_text = options_value_font.render(str(add_options_value), True, (50,50,50))
+        options_value_text_rect = options_value_text.get_rect(center = (add_options_location[0] + options_rect_size[0]/2, add_options_location[1] + options_rect_size[1]/2))
+        add_options_rect.fill(colors[add_options_value])
+        screen.blit(add_options_rect, add_options_location)
+        screen.blit(options_value_text, options_value_text_rect)
 
+        submit_number_button = pg.Surface(submit_button_size)
+        submit_number_button.fill(submit_button_color)
+        screen.blit(submit_number_button, submit_button_location)
+
+        submit_font = pg.font.Font(None, 40)
+        submit_text = submit_font.render("Submit", True, (50,50,50))
+        submit_text_rect = submit_text.get_rect(center = (submit_button_location[0] + submit_button_size[0]/2, submit_button_location[1] + submit_button_size[1]/2))
+        screen.blit(submit_text, submit_text_rect)
+
+        cancel_number_button = pg.Surface(cancel_button_size)
+        cancel_number_button.fill(cancel_button_color)
+        screen.blit(cancel_number_button, cancel_button_location)
+
+        cancel_font = pg.font.Font(None, 40)
+        cancel_text = cancel_font.render("Cancel", True, (0,0,0))
+        cancel_text_rect = cancel_text.get_rect(center = (cancel_button_location[0] + cancel_button_size[0]/2, cancel_button_location[1] + cancel_button_size[1]/2))
+        screen.blit(cancel_text, cancel_text_rect)
+        pg.display.update()
+
+        add_value_button = pg.Surface(add_value_button_size)
+        add_value_button.fill(add_value_button_color)
+        screen.blit(add_value_button, add_value_button_location)
+
+        add_value_font = pg.font.Font(None, 40)
+        add_value_text = cancel_font.render("Add To Possible Values", True, (50,50,50))
+        add_value_text_rect = cancel_text.get_rect(center = (add_value_button_location[0] + add_value_button_size[0]/4, add_value_button_location[1] + add_value_button_size[1]/2))
+        screen.blit(add_value_text, add_value_text_rect)
+        pg.display.update()
+
+        new_possible_values = []
+
+        while True:
+            for event in pg.event.get():
+                if event.type == pg.MOUSEBUTTONDOWN:
+                    if pg.mouse.get_pos()[0] > add_options_location[0] and pg.mouse.get_pos()[0] < add_options_location[0] + options_rect_size[0] and pg.mouse.get_pos()[1] > add_options_location[1] and pg.mouse.get_pos()[1] < add_options_location[1] + options_rect_size[1]:
+                        if add_options_value == 2048:
+                            add_options_value = 2
+                        else:
+                            add_options_value = add_options_value * 2
+                        if add_options_value >= 1000:
+                            options_font_size = 110
+                        else:
+                            options_font_size = 150
+                        print(options_font_size)
+                        options_color = (50,50,50)
+                        if add_options_value >= 8:
+                            options_color = (255,255,255)
+                        options_value_font = pg.font.Font(None, options_font_size)
+                        options_value_text = options_value_font.render(str(add_options_value), True, (options_color))
+                        options_value_text_rect = options_value_text.get_rect(center = (add_options_location[0] + options_rect_size[0]/2, add_options_location[1] + options_rect_size[1]/2))
+                        print(add_options_value)
+                        add_options_rect.fill(colors[add_options_value])
+                        screen.blit(add_options_rect, add_options_location)
+                        screen.blit(options_value_text, options_value_text_rect)
+                        pg.display.update()
+                    elif pg.mouse.get_pos()[0] > submit_button_location[0] and pg.mouse.get_pos()[0] < submit_button_location[0] + submit_button_size[0] and pg.mouse.get_pos()[1] > submit_button_location[1] and pg.mouse.get_pos()[1] < submit_button_location[1] + submit_button_size[1]:
+                        if len(new_possible_values) > 0:
+                            pg.draw.rect(screen, (background_color), (0, screen_dimension/2 - screen_dimension/4, screen_dimension, screen_dimension/2))
+                            board_create(locations)
+                            possible_values = []
+                            for i in range(len(new_possible_values)):
+                                possible_values.append(new_possible_values[i])
+                            print(possible_values)
+                            return
+                            pg.display.update()
+                        else:
+                            add_number_text = "Please Add Your Values Before Submitting"
+                            add_number_message_font = pg.font.Font(None, 60)
+                            pg.draw.rect(screen, (150,150,150), (0, screen_dimension/2 - screen_dimension/4, screen_dimension, 150))
+                            add_number_message = add_number_message_font.render(add_number_text, True, (240,50,50))
+                            add_number_message_rect = add_number_message.get_rect(center = (screen_dimension/2, screen_dimension/3 + 40))
+                            screen.blit(add_number_message, add_number_message_rect)
+                            pg.display.update()
+                    elif pg.mouse.get_pos()[0] > add_value_button_location[0] and pg.mouse.get_pos()[0] < add_value_button_location[0] + add_value_button_size[0] and pg.mouse.get_pos()[1] > add_value_button_location[1] and pg.mouse.get_pos()[1] < add_value_button_location[1] + add_value_button_size[1]:
+                        if add_number_text != "Click to Increase Value":
+                            add_number_text = "Click to Increase Value"
+                            pg.draw.rect(screen, (150,150,150), (0, screen_dimension/2 - screen_dimension/4, screen_dimension, 150))
+                            add_number_message = add_number_message_font.render(add_number_text, True, (50,50,50))
+                            add_number_message_rect = add_number_message.get_rect(center = (screen_dimension/2, screen_dimension/3 + 40))
+                            screen.blit(add_number_message, add_number_message_rect)
+                            pg.display.update()
+
+                        clicked_add_value_button = pg.Surface(add_value_button_size)
+                        clicked_add_value_button.fill((70,70,70))
+                        screen.blit(clicked_add_value_button, add_value_button_location)
+
+                        add_value_font = pg.font.Font(None, 40)
+                        add_value_text = cancel_font.render("Add To Possible Values", True, (50,50,50))
+                        add_value_text_rect = cancel_text.get_rect(center = (add_value_button_location[0] + add_value_button_size[0]/4, add_value_button_location[1] + add_value_button_size[1]/2))
+                        screen.blit(add_value_text, add_value_text_rect)
+                        pg.display.update()
+
+                        pg.time.wait(100)
+
+                        add_value_button_color = (add_value_button_color)
+                        add_value_button = pg.Surface(    add_value_button_size)
+                        add_value_button.fill(add_value_button_color)
+                        screen.blit(add_value_button, add_value_button_location)
+
+                        add_value_font = pg.font.Font(None, 40)
+                        add_value_text = cancel_font.render("Add To Possible Values", True, (50,50,50))
+                        add_value_text_rect = cancel_text.get_rect(center = (add_value_button_location[0] + add_value_button_size[0]/4, add_value_button_location[1] + add_value_button_size[1]/2))
+                        screen.blit(add_value_text, add_value_text_rect)
+                        pg.display.update()
+                        new_possible_values.append(add_options_value)
+                    elif pg.mouse.get_pos()[0] > cancel_button_location[0] and pg.mouse.get_pos()[0] < cancel_button_location[0] + cancel_button_size[0] and pg.mouse.get_pos()[1] > cancel_button_location[1] and pg.mouse.get_pos()[1] < cancel_button_location[1] + cancel_button_size[1]:
+                        pg.draw.rect(screen, (background_color), (0, screen_dimension/2 - screen_dimension/4, screen_dimension, screen_dimension/2))
+                        board_create(locations)
+                        return("cancel")
+                elif event.type == pg.QUIT:
+                    pg.quit()
 
 def draw_start_cheat():
     no_number_3 = "Off"
@@ -487,16 +629,28 @@ def draw_start_cheat():
     screen.blit(add_number_button, ((screen_dimension/5)*2.5 - cheat_button_size[0]/2, cheat_button_location_y))
 
     add_number_button_text_1 = cheat_font.render("Add", True, (50,50,50))
-    add_number_button_text_rect_1 = add_number_button_text_1.get_rect(center = (add_number_button_location[0], cheat_button_location_y + cheat_button_size[1]/2 - 12))
+    add_number_button_text_rect_1 = add_number_button_text_1.get_rect(center = (add_number_button_location[0] + cheat_button_size[0]/2, cheat_button_location_y + cheat_button_size[1]/2 - 12))
     screen.blit(add_number_button_text_1, add_number_button_text_rect_1)
 
     add_number_button_text_2 = cheat_font.render("Numbers", True, (50,50,50))
-    add_number_button_text_rect_2 = add_number_button_text_2.get_rect(center = (add_number_button_location[0], cheat_button_location_y + cheat_button_size[1]/2 + 12))
+    add_number_button_text_rect_2 = add_number_button_text_2.get_rect(center = (add_number_button_location[0] + cheat_button_size[0]/2, cheat_button_location_y + cheat_button_size[1]/2 + 12))
     screen.blit(add_number_button_text_2, add_number_button_text_rect_2)
 
     possible_values_button = pg.Surface(cheat_button_size)
     possible_values_button.fill(cheat_button_color)
     screen.blit(possible_values_button, ((screen_dimension/5)*4 - cheat_button_size[0]/2, cheat_button_location_y))
+
+    possible_values_button_text_1 = cheat_font.render("Edit", True, (50,50,50))
+    add_number_button_text_rect_1 = add_number_button_text_1.get_rect(center = (possible_values_button_location[0] + cheat_button_size[0]/2, cheat_button_location_y + cheat_button_size[1]/2 - 25))
+    screen.blit(add_number_button_text_1, add_number_button_text_rect_1)
+
+    possible_values_button_text_2 = cheat_font.render("Possible", True, (50,50,50))
+    possible_values_button_text_rect_2 = possible_values_button_text_2.get_rect(center = (possible_values_button_location[0] + cheat_button_size[0]/2, cheat_button_location_y + cheat_button_size[1]/2))
+    screen.blit(possible_values_button_text_2, possible_values_button_text_rect_2)
+
+    possible_values_button_text_2 = cheat_font.render("Values", True, (50,50,50))
+    possible_values_button_text_rect_2 = possible_values_button_text_2.get_rect(center = (possible_values_button_location[0] + cheat_button_size[0]/2, cheat_button_location_y + cheat_button_size[1]/2 + 25))
+    screen.blit(possible_values_button_text_2, possible_values_button_text_rect_2)
 
     pg.display.update()
 
@@ -517,7 +671,12 @@ def move1c_step(a, b):
             new_locations[b] = new_locations[a]
             new_locations[a] = 0
 
-def move2c(a,b,c):
+def move2c(start, increment, step):
+    for i in range(0,4):
+        move2c_step(start + i * step, start + i * step + increment, start + i * step + increment*2)
+
+def move2c_step(a,b,c):
+    print(a, b, c)
     global score
     if new_locations[a] != 0:
         print("move2c called")
@@ -537,7 +696,12 @@ def move2c(a,b,c):
                 new_locations[b] = new_locations[a]
                 new_locations[a] = 0
 
-def move3c(a,b,c,d):
+def move3c(start, increment, step):
+    for i in range(0,4):
+        move3c_step(start + i * step, start + i * step + increment, start + i * step + increment*2, start + i * step + increment*3)
+
+
+def move3c_step(a,b,c,d):
     global score
     if new_locations[a] != 0:
         print("move3c called")
@@ -575,6 +739,8 @@ def which_square():
             return 8
         elif pg.mouse.get_pos()[1] > margin + padding + (cell_size + padding)*3 and pg.mouse.get_pos()[1] < margin + padding + cell_size + (cell_size + padding)*3:
             return 12
+        else:
+            return 20
     elif pg.mouse.get_pos()[0] > margin + padding + cell_size + padding and pg.mouse.get_pos()[0] < margin + padding + padding + cell_size + cell_size:
         if pg.mouse.get_pos()[1] > margin + padding and pg.mouse.get_pos()[1] < margin + padding + cell_size:
             return 1
@@ -584,6 +750,8 @@ def which_square():
             return 9
         elif pg.mouse.get_pos()[1] > margin + padding + (cell_size + padding)*3 and pg.mouse.get_pos()[1] < margin + padding + cell_size + (cell_size + padding)*3:
             return 13
+        else:
+            return 20
     elif pg.mouse.get_pos()[0] > margin + padding + (cell_size + padding)*2 and pg.mouse.get_pos()[0] < margin + padding + cell_size + (cell_size + padding)*2:
         if pg.mouse.get_pos()[1] > margin + padding and pg.mouse.get_pos()[1] < margin + padding + cell_size:
             return 2
@@ -592,7 +760,9 @@ def which_square():
         elif pg.mouse.get_pos()[1] > margin + padding + (cell_size + padding)*2 and pg.mouse.get_pos()[1] < margin + padding + cell_size + (cell_size + padding)*2:
             return 10
         elif pg.mouse.get_pos()[1] > margin + padding + (cell_size + padding)*3 and pg.mouse.get_pos()[1] < margin + padding + cell_size + (cell_size + padding)*3:
-            return 15
+            return 14
+        else:
+            return 20
     elif pg.mouse.get_pos()[0] > margin + padding + (cell_size + padding)*3 and pg.mouse.get_pos()[0] < margin + padding + cell_size + (cell_size + padding)*3:
         if pg.mouse.get_pos()[1] > margin + padding and pg.mouse.get_pos()[1] < margin + padding + cell_size:
             return 3
@@ -602,14 +772,17 @@ def which_square():
             return 11
         elif pg.mouse.get_pos()[1] > margin + padding + (cell_size + padding)*3 and pg.mouse.get_pos()[1] < margin + padding + cell_size + (cell_size + padding)*3:
             return 15
+        else:
+            return 20
     else:
         return 20
 
 
 def game_start():
+    global game_end
     global cheat_mode
     global new_numbers
-    cheat_mode = False
+    game_end = False
     new_numbers = True
     global possible_values
     possible_values = [2,2,2,2,2,2,2,2,2,4]
@@ -624,6 +797,8 @@ def game_start():
     screen.fill(background_color)
     pg.display.set_caption("2048")
     board_create(locations)
+    if cheat_mode:
+        draw_start_cheat()
 
 def game_over():
     print("game over")
@@ -642,6 +817,7 @@ def game_over():
     end_score_rect = end_score.get_rect(center = ((board_size/2 + margin), ((board_size/3.5 + margin))))
     screen.blit(end_score, end_score_rect)
     pg.display.update()
+    global game_end
     game_end = True
 
 
@@ -696,14 +872,14 @@ while (True):
     for event in pg.event.get():
         if event.type == pg.MOUSEMOTION:
             if pg.mouse.get_pos()[0] > button_pos[0] and pg.mouse.get_pos()[0] < button_pos[0] + button_size[0] and pg.mouse.get_pos()[1] > button_pos[1] and pg.mouse.get_pos()[1] < button_pos[1] + button_size[1]:
-                if not hovered:
-                    hovered = True
+                if not new_game_hovered:
+                    new_game_hovered = True
                     button_color = hover
                     print(button_color)
                     draw_button_bar()
             else:
-                if hovered:
-                    hovered = False
+                if new_game_hovered:
+                    new_game_hovered = False
                     button_color = unhover
                     draw_button_bar()
         if event.type == pg.MOUSEBUTTONDOWN:
@@ -713,22 +889,26 @@ while (True):
                 if pg.mouse.get_pos()[0] > no_number_button_location[0] and pg.mouse.get_pos()[0] < no_number_button_location[0] + cheat_button_size[0] and pg.mouse.get_pos()[1] > no_number_button_location[1] and pg.mouse.get_pos()[1] < no_number_button_location[1] + cheat_button_size[1]:
                     new_numbers_clicked = True
                     draw_cheat()
-                elif pg.mouse.get_pos()[0] > add_number_button_location[0] - cheat_button_size[0]/2 and pg.mouse.get_pos()[0] < add_number_button_location[0] + cheat_button_size[0] and pg.mouse.get_pos()[1] > add_number_button_location[1] and pg.mouse.get_pos()[1] < add_number_button_location[1] + cheat_button_size[1]:
+                elif pg.mouse.get_pos()[0] > add_number_button_location[0] and pg.mouse.get_pos()[0] < add_number_button_location[0] + cheat_button_size[0] and pg.mouse.get_pos()[1] > add_number_button_location[1] and pg.mouse.get_pos()[1] < add_number_button_location[1] + cheat_button_size[1]:
                     add_number_clicked = True
+                    draw_cheat()
+                elif pg.mouse.get_pos()[0] > possible_values_button_location[0] - cheat_button_size[0]/2 and pg.mouse.get_pos()[0] < possible_values_button_location[0] + cheat_button_size[0] and pg.mouse.get_pos()[1] > possible_values_button_location[1] and pg.mouse.get_pos()[1] < possible_values_button_location[1] + cheat_button_size[1]:
+                    possible_values_clicked = True
                     draw_cheat()
 
         if event.type == pg.QUIT:
             pg.quit()
-        if event.type == pg.KEYDOWN:
-            if event.key == pg.K_UP:
-                up()
-            elif event.key == pg.K_DOWN:
-                down()
-            elif event.key == pg.K_RIGHT:
-                right()
-            elif event.key == pg.K_LEFT:
-                left()
-            elif event.key == pg.K_y:
-                if pg.mouse.get_pos()[0] > cheat_pos[0] and pg.mouse.get_pos()[0] < cheat_pos[0] + cell_size and pg.mouse.get_pos()[1] < cheat_pos[1] - cell_size and pg.mouse.get_pos()[1] > button_pos[1]:
-                    cheat_mode = True
-                    draw_start_cheat()
+        if not game_end:
+            if event.type == pg.KEYDOWN:
+                if event.key == pg.K_UP:
+                        up()
+                elif event.key == pg.K_DOWN:
+                        down()
+                elif event.key == pg.K_RIGHT:
+                        right()
+                elif event.key == pg.K_LEFT:
+                        left()
+                elif event.key == pg.K_y:
+                        if pg.mouse.get_pos()[0] > cheat_pos[0] and pg.mouse.get_pos()[0] < cheat_pos[0] + cell_size and pg.mouse.get_pos()[1] < cheat_pos[1] - cell_size and pg.mouse.get_pos()[1] > button_pos[1]:
+                            cheat_mode = True
+                            draw_start_cheat()
