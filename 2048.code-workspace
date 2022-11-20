@@ -1,8 +1,23 @@
 {
 	"folders": [
 		{
-			"path": "."
+			"path": "..\\7wonders"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"python.pythonPath": "C:\\Users\\Damian\\.conda\\envs\\env2048\\python.exe"
+	},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+
+			{
+				"name": "Python: Current File",
+				"type": "python",
+				"request": "launch",
+				"program": "${file}",
+				"console": "integratedTerminal"
+			}
+		]
+	}
 }

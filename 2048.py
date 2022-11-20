@@ -311,11 +311,6 @@ def new_number():
                 break
             i += 1
 
-# this is here that I can find find this spot more easily
-# this is here that I can find find this spot more easily
-# this is here that I can find find this spot more easily
-# this is here that I can find find this spot more easily
-
 def draw_cheat():
     global new_numbers
     global new_numbers_clicked
@@ -324,6 +319,7 @@ def draw_cheat():
     global new_possible_values
     global possible_values
     global add_value_button_color
+
     if new_numbers_clicked:
         new_numbers_clicked = False
         if not new_numbers:
@@ -399,6 +395,7 @@ def draw_cheat():
         cancel_text_rect = cancel_text.get_rect(center = (cancel_button_location[0] + cancel_button_size[0]/2, cancel_button_location[1] + cancel_button_size[1]/2))
         screen.blit(cancel_text, cancel_text_rect)
         pg.display.update()
+        
         while True:
             global tile_hovered
             for event in pg.event.get():
@@ -897,6 +894,7 @@ while (True):
                     draw_cheat()
 
         if event.type == pg.QUIT:
+            print("quit: ", event)
             pg.quit()
         if not game_end:
             if event.type == pg.KEYDOWN:
