@@ -17,4 +17,8 @@ python 2048.py
 ## Bonus
 Pong game implemented from a tutorial
 
+```
+python please_delete_soon.py
+```
+
 ![Pong](pong.png)
