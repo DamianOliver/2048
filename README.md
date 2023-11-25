@@ -14,6 +14,10 @@ pip install -r requirements.txt
 python 2048.py
 ```
 
+## How to Play
+
+Use Arrow keys to add and combine like numbers.
+
 ## Bonus
 Pong game implemented from a tutorial
 
